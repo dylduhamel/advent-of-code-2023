@@ -113,7 +113,6 @@ with open("./input.txt", "r") as file:
 
 sum_1 = 0
 sum_2 = 0
-
 for text_line in text_lines:
     game_id, possible = check_game_possibility(text_line)
 
