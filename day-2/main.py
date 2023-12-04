@@ -91,28 +91,28 @@ def compute_min_set(text_line):
     # List of sets Eg. ['8 green, 10 red, 9 blue', '6 green, 5 red', '12 green, 2 blue', '17 green, 5 red']
     sets = re.findall(f"((?:\d+ (?:green|red|blue),? ?)+);?", text_line)
 
+    # Playable min
+    red_min = float("-inf")
+    green_min = float("-inf")
+    blue_min = float("-inf")
+
     for set in sets:
-        # Playable min
-        red_min = float("inf")
-        green_min = float("inf")
-        blue_min = float("inf")
-        
         for rolls in set.split(", "):
-            if "red" in rolls and int(rolls.split(" ")[0]) < red_min:
+            if "red" in rolls and int(rolls.split(" ")[0]) > red_min:
                 red_min = int(rolls.split(" ")[0])
-            if "green" in rolls and int(rolls.split(" ")[0]) < green_min:
+            if "green" in rolls and int(rolls.split(" ")[0]) > green_min:
                 green_min = int(rolls.split(" ")[0])
-            if "blue" in rolls and int(rolls.split(" ")[0]) < blue_min:
+            if "blue" in rolls and int(rolls.split(" ")[0]) > blue_min:
                 blue_min = int(rolls.split(" ")[0])
 
-
-    return [game_id, (True)]
+    return [game_id, (red_min * green_min * blue_min)]
 
 
 with open("./input.txt", "r") as file:
     text_lines = file.read().splitlines()
 
 sum_1 = 0
+sum_2 = 0
 
 for text_line in text_lines:
     game_id, possible = check_game_possibility(text_line)
@@ -120,4 +120,8 @@ for text_line in text_lines:
     if possible:
         sum_1 += game_id
 
-print(sum_1)
+    game_id, game_min = compute_min_set(text_line)
+    sum_2 += game_min
+
+print(f"Solution 1: {sum_1}")
+print(f"Solution 2: {sum_2}")
