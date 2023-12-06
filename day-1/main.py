@@ -30,7 +30,7 @@ Consider your entire calibration document. What is the sum of all of the calibra
 
 
 # text_line is one line of calibration data. Eg. "a1b2c3d4e5f"
-def compute_calibration_value(text_line):
+def compute_calibration_value(text_line: list[str]) -> int:
     digit_1 = ""
     digit_2 = ""
 
@@ -72,7 +72,7 @@ What is the sum of all of the calibration values?
 
 # Replace each instance of the numerical word with its associated number.
 # Then you can compute calib value with func from pt. 1
-def compute_calibration_value_word(text_line):
+def compute_calibration_value_word(text_line: list[str]) -> int:
     digit_words = [
         "one",
         "two",
@@ -92,15 +92,16 @@ def compute_calibration_value_word(text_line):
     return compute_calibration_value(text_line)
 
 
-with open("./input.txt", "r") as file:
-    text_lines = file.read().splitlines()
+if __name__ == "__main__":
+    with open("./input.txt", "r") as file:
+        text_lines = file.read().splitlines()
 
-sum_1 = 0
-sum_2 = 0
+    sum_1 = 0
+    sum_2 = 0
 
-for text_line in text_lines:
-    sum_1 += compute_calibration_value(text_line)
-    sum_2 += compute_calibration_value_word(text_line)
+    for text_line in text_lines:
+        sum_1 += compute_calibration_value(text_line)
+        sum_2 += compute_calibration_value_word(text_line)
 
-print(f"Solution 1: {sum_1}")
-print(f"Solution 2: {sum_2}")
+    print(f"Solution 1: {sum_1}")
+    print(f"Solution 2: {sum_2}")

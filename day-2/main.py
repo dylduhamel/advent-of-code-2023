@@ -32,7 +32,7 @@ Determine which games would have been possible if the bag had been loaded with o
 """
 
 
-def check_game_possibility(text_line):
+def check_game_possibility(text_line: list[str]) -> list[int, bool]:
     # Extract game #
     game_id = int(re.search(r"Game (\d+):", text_line).group(1))
 
@@ -84,7 +84,7 @@ For each game, find the minimum set of cubes that must have been present. What i
 """
 
 
-def compute_min_set(text_line):
+def compute_min_set(text_line: list[str]) -> list[int, int]:
     # Extract game #
     game_id = int(re.search(r"Game (\d+):", text_line).group(1))
 
@@ -108,20 +108,21 @@ def compute_min_set(text_line):
     return [game_id, (red_min * green_min * blue_min)]
 
 
-with open("./input.txt", "r") as file:
-    text_lines = file.read().splitlines()
+if __name__ == "__main__":
+    with open("./input.txt", "r") as file:
+        text_lines = file.read().splitlines()
 
-sum_1 = 0
-sum_2 = 0
+    sum_1 = 0
+    sum_2 = 0
 
-for text_line in text_lines:
-    game_id, possible = check_game_possibility(text_line)
+    for text_line in text_lines:
+        game_id, possible = check_game_possibility(text_line)
 
-    if possible:
-        sum_1 += game_id
+        if possible:
+            sum_1 += game_id
 
-    game_id, game_min = compute_min_set(text_line)
-    sum_2 += game_min
+        game_id, game_min = compute_min_set(text_line)
+        sum_2 += game_min
 
-print(f"Solution 1: {sum_1}")
-print(f"Solution 2: {sum_2}")
+    print(f"Solution 1: {sum_1}")
+    print(f"Solution 2: {sum_2}")

@@ -1,4 +1,5 @@
 import re
+import collections
 
 """
 --- Day 3: Gear Ratios ---
@@ -36,7 +37,8 @@ Of course, the actual engine schematic is much larger. What is the sum of all of
 
 
 def find_numbers_with_match(
-    prev_line: str | None, line: str, next_line: str | None) -> list[int]:
+    prev_line: str | None, line: str, next_line: str | None
+) -> list[int]:
     numbers = []
     # Returns an iterator over all matches (0-9) in the line
     for number in re.finditer("[0-9]+", line):
@@ -64,10 +66,11 @@ def find_numbers_with_match(
 
         if symbol_left or symbol_right or symbol_top or symbol_bottom:
             numbers.append(int(number.group()))
-    
+
     return numbers
 
-def compute_valid_part_numbers(lines):
+
+def compute_valid_part_numbers(lines: list[str]) -> int:
     sum_1 = 0
 
     for line_idx, line in enumerate(lines):
@@ -81,7 +84,82 @@ def compute_valid_part_numbers(lines):
     return sum_1
 
 
-with open("./input.txt", "r") as file:
-    lines = [x.strip() for x in file.readlines()]
+"""
+--- Part Two ---
 
-print(f"Solution 1: {compute_valid_part_numbers(lines)}")
+The engineer finds the missing part and installs it in the engine! As the engine springs to life, you jump in the closest gondola, finally ready to ascend to the water source.
+
+You don't seem to be going very fast, though. Maybe something is still wrong? Fortunately, the gondola has a phone labeled "help", so you pick it up and the engineer answers.
+
+Before you can explain the situation, she suggests that you look out the window. There stands the engineer, holding a phone in one hand and waving with the other. You're going so slowly that you haven't even left the station. You exit the gondola.
+
+The missing part wasn't the only issue - one of the gears in the engine is wrong. A gear is any * symbol that is adjacent to exactly two part numbers. Its gear ratio is the result of multiplying those two numbers together.
+
+This time, you need to find the gear ratio of every gear and add them all up so that the engineer can figure out which gear needs to be replaced.
+
+Consider the same engine schematic again:
+
+467..114..
+...*......
+..35..633.
+......#...
+617*......
+.....+.58.
+..592.....
+......755.
+...$.*....
+.664.598..
+
+In this schematic, there are two gears. The first is in the top left; it has part numbers 467 and 35, so its gear ratio is 16345. The second gear is in the lower right; its gear ratio is 451490. (The * adjacent to 617 is not a gear because it is only adjacent to one part number.) Adding up all of the gear ratios produces 467835.
+
+What is the sum of all of the gear ratios in your engine schematic?
+"""
+
+
+def find_all_gear_ratios(lines: list[str]) -> collections.defaultdict:
+    gears = collections.defaultdict(list)
+
+    for line_idx, line in enumerate(lines):
+        prev_line = lines[line_idx - 1] if line_idx - 1 >= 0 else None
+        next_line = lines[line_idx + 1] if line_idx + 1 < len(line) else None
+
+        for number in re.finditer("[0-9]+", line):
+            first_idx, last_idx = number.span()
+            last_idx -= 1
+            number = int(number.group())
+
+            left_idx = first_idx - 1 if first_idx - 1 >= 0 else first_idx
+            if line[left_idx] == "*":
+                gears[(left_idx, line_idx)].append(number)
+
+            right_idx = last_idx + 1 if last_idx + 1 < len(line) else last_idx
+            if line[right_idx] == "*":
+                gears[(right_idx, line_idx)].append(number)
+
+            if prev_line is not None:
+                for i in range(left_idx, right_idx + 1):
+                    if prev_line[i] == "*":
+                        gears[(i, line_idx - 1)].append(number)
+
+            if next_line is not None:
+                for i in range(left_idx, right_idx + 1):
+                    if next_line[i] == "*":
+                        gears[(i, line_idx + 1)].append(number)
+
+    return gears
+
+
+if __name__ == "__main__":
+    gears = collections.defaultdict(list)
+
+    with open("./input.txt", "r") as file:
+        lines = [x.strip() for x in file.readlines()]
+
+    gears = find_all_gear_ratios(lines)
+    total = 0
+    for gear in gears.values():
+        if len(gear) == 2:
+            total += gear[0] * gear[1]
+
+    print(f"Solution 2: {total}")
+    print(f"Solution 1: {compute_valid_part_numbers(lines)}")
