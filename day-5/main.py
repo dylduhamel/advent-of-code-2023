@@ -116,7 +116,7 @@ def compute_min_seed_location(lines: list[str]) -> int:
             dst, src, range_len = [int(x) for x in re.findall("[0-9]+", line)]
             mappings[-1].append((dst, src, range_len))
 
-    for seed in expanded_seeds:
+    for seed in seeds:
         for mapping in mappings:
             for dst, src, range_len in mapping:
                 if seed >= src and seed < src + range_len:
@@ -145,10 +145,15 @@ In the above example, the lowest location number can be obtained from seed numbe
 Consider all of the initial seed numbers listed in the ranges on the first line of the almanac. What is the lowest location number that corresponds to any of the initial seed numbers?
 """
 
+
 def compute_min_expanded_seed_location(lines: list[str]) -> int:
-    min_location = float("inf")
-    seeds = [int(x) for x in re.findall("[0-9]+", lines[0])]
-    
+    min_location = 10**100
+    # The ranges are quite lare, which makes it difficult to store in memory
+    # Thus, we must create a generator
+    input = [int(x) for x in re.findall("[0-9]+", lines[0])]
+    even_indexes = [i for i in range(len(input)) if i % 2 == 0]
+    seed_ranges = [range(input[i], input[i] + input[i + 1]) for i in even_indexes]
+    seeds = (seed for seed_range in seed_ranges for seed in seed_range)
 
     mappings: list[list[tuple]] = []
     for line in [l for l in lines[1:] if l != ""]:
@@ -158,20 +163,22 @@ def compute_min_expanded_seed_location(lines: list[str]) -> int:
             dst, src, range_len = [int(x) for x in re.findall("[0-9]+", line)]
             mappings[-1].append((dst, src, range_len))
 
-    for seed in expanded_seeds:
+    for current in seeds:
         for mapping in mappings:
             for dst, src, range_len in mapping:
-                if seed >= src and seed < src + range_len:
-                    seed = dst + seed - src
+                if current >= src and current < src + range_len:
+                    current = dst + current - src
                     break
-        min_location = min(min_location, seed)
+        min_location = min(min_location, current)
 
     return min_location
 
 
-with open("./input.txt", "r") as file:
-    lines = [line.strip() for line in file.readlines()]
+if __name__ == "__main__":
+    lines = [line.strip() for line in list(open("./input.txt"))]
 
-sol_1 = compute_min_seed_location(lines)
+    sol_1 = compute_min_seed_location(lines)
+    sol_2 = compute_min_expanded_seed_location(lines)
 
-print(f"Solution 1: {sol_1}")
+    print(f"Solution 1: {sol_1}")
+    print(f"Solution 2: {sol_2}")
