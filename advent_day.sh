@@ -15,7 +15,7 @@ mkdir "day-$number"
 cd "day-$number"
 
 touch input.txt
-echo "with open(\"./input.txt\", \"r\") as file:
-    text_lines = file.read().splitlines()" > main.py
+echo "if __name__ == \"__main__\":
+    lines = [line.strip() for line in list(open(\"./input.txt\"))]" > main.py
 
 echo "Folder 'day-$number' created with files 'input.txt' and 'main.py'"

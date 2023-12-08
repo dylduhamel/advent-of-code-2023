@@ -147,7 +147,7 @@ Consider all of the initial seed numbers listed in the ranges on the first line 
 
 
 def compute_min_expanded_seed_location(lines: list[str]) -> int:
-    min_location = 10**100
+    min_location: int = 10**100
     # The ranges are quite lare, which makes it difficult to store in memory
     # Thus, we must create a generator
     input = [int(x) for x in re.findall("[0-9]+", lines[0])]
