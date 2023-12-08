@@ -14,6 +14,7 @@ mkdir "day-$number"
 
 cd "day-$number"
 
+# Boilerplate file input
 touch input.txt
 echo "if __name__ == \"__main__\":
     lines = [line.strip() for line in list(open(\"./input.txt\"))]" > main.py
